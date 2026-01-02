@@ -1,7 +1,7 @@
 const axios = require('axios');
 
 const API_KEY = process.env.SPORTRADAR_API_KEY;
-const BASE_URL = process.env.SPORTRADAR_API_BASE_URL || 'https://api.sportradar.com/nfl';
+const BASE_URL = process.env.SPORTRADAR_API_BASE_URL || 'https://api.sportradar.com/nfl/official/trial/v7/en';
 
 if (!API_KEY) {
   console.warn('Warning: SPORTRADAR_API_KEY not set in environment variables');
@@ -18,9 +18,16 @@ const sportradarAPI = axios.create({
 const getCurrentSeason = () => {
   const now = new Date();
   const year = now.getFullYear();
-  const month = now.getMonth(); // 0-11
-  // NFL season starts in September, so if it's before September, use previous year
-  return month < 8 ? year - 1 : year;
+  const month = now.getMonth(); // 0-11 (0 = January)
+  // NFL season runs Sept-Feb, so:
+  // - Jan/Feb (0-1): use year-1 (season started in September of previous year)
+  // - Mar-Aug (2-7): use year-1 (previous season)
+  // - Sep-Dec (8-11): use current year (current season)
+  if (month < 8) {
+    return year - 1; // Jan-Aug: season started in previous year's September
+  } else {
+    return year; // Sep-Dec: current season
+  }
 };
 
 // Get current week (simplified - in production, use actual NFL schedule)
