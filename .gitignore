@@ -1,0 +1,16 @@
+node_modules/
+client/node_modules/
+.env
+data/
+.DS_Store
+*.log
+dist/
+build/
+.cache/
+
+# Server management files
+.backend.pid
+.frontend.pid
+server.log
+client.log
+
